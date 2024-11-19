@@ -45,3 +45,4 @@ let union (u:uf) (i:int) (j:int) : () =
     end
   | x when x > 0 -> pere.(fi) <- fj;;
 
+attention au champ "sons" non initialisé
