@@ -1,0 +1,47 @@
+type uf =
+  {
+    father : int array;
+    sons : int list array;
+    rank : int array;
+    mutable nb_c : int;
+    lock : int;(* Mutex.t;*)
+  }
+  
+  
+let create (n:int) : uf =
+  let father = Array.init n (fun x -> x) in
+  let sons = Array.init n (fun x -> []) in
+  let rank = Array.make n 0 in
+  let nb_c = n in
+  let lock = 5 (* Mutex.create () *)in
+  {father=father;sons=sons;rank=rank;nb_c=nb_c;lock=lock};;
+
+let rec find_aux (u:uf) (i:int) : int =
+  let {father=father;sons=sons;rank=rank;nb_c=nb_c;lock=lock} = u in
+  if father.(i) = i then
+    i
+  else
+    begin
+      let repr = find_aux u father.(i) in
+      father.(i) <- repr;
+      repr
+    end;;
+
+let find (u:uf) (i:int) : int =
+  let {father=father;sons=sons;rank=rank;nb_c=nb_c;lock=lock} = u in
+  Mutex.lock lock;
+  let res = find_aux u i in
+  Mutex.unlock lock;
+  res;;
+
+let union (u:uf) (i:int) (j:int) : () =
+  let fi = find i in
+  let fj = find j in
+  match rank.(fi) - rank.(fj) with
+  | x when x < 0 -> pere.(fj) <- fi(*rang de fi < rang de fj*)
+  | x when x = 0-> begin
+      pere.(fj) <- fi;
+      rank.(fi) <- rank.(fi) + 1
+    end
+  | x when x > 0 -> pere.(fi) <- fj;;
+
