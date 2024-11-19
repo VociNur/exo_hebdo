@@ -37,6 +37,7 @@ let find (u:uf) (i:int) : int =
 let union (u:uf) (i:int) (j:int) : () =
   let fi = find i in
   let fj = find j in
+  if fi = fj then () else
   match rank.(fi) - rank.(fj) with
   | x when x < 0 -> pere.(fj) <- fi(*rang de fi < rang de fj*)
   | x when x = 0-> begin
